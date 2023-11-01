@@ -8,13 +8,13 @@ class BillsController < ApplicationController
 
   # GET /bills/1 or /bills/1.json
   def show
+    @remaining_denominations = params[:denominations]
   end
 
   # GET /bills/new
   def new
     @bill = Bill.new
     @bill.bill_products.build
-    @products = Product.all.pluck(:id)
   end
 
   # GET /bills/1/edit
@@ -40,14 +40,15 @@ class BillsController < ApplicationController
       )
       # Save the bill_product record
       @bill_product.save
-    end
+     end
 
 
     @bill.denominations = bill_params.slice(:denominations)
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
+    @remaining_denomination = @bill.remaining_denominations
     respond_to do |format|
       if @bill.save
-        format.html { redirect_to bill_url(@bill), notice: "Bill was successfully created." }
+        format.html { redirect_to bill_url(@bill, @remaining_denomination), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -114,3 +115,4 @@ class BillsController < ApplicationController
     #   params.require(:bill).permit( denominations: %w[2000 500 200 100 50 10 5 2 1] )
     # end
 end
+

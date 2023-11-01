@@ -26,7 +26,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_31_121129) do
 
   create_table "bills", force: :cascade do |t|
     t.string "customer_email"
-    t.float "customer_amount"
+    t.decimal "customer_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

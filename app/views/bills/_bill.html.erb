@@ -3,20 +3,17 @@
     <strong>Customer email:</strong>
     <%= bill.customer_email %>
   </p>
-  <p>
-    <strong>Customer email:</strong>
-    <%= bill.customer_email %>
-  </p>
-  <p>
-    <strong>Customer email:</strong>
-    <%= bill.customer_email %>
-  </p>
-  <p>
-    <strong>Customer email:</strong>
-    <%= bill.customer_email %>
-  </p>
 
-
+  <% if params[:action] === 'show' && params[:denominations].present? %>
+  <div>
+    <strong>denominations:</strong>
+    <ul>
+      <%= denominations.each do |rupee, count| %>
+        <li><%= rupee %> => <%= count %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
   <p>
     <strong>Customer amount:</strong>

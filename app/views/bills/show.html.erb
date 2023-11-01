@@ -1,10 +1,10 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @bill %>
+<%= render @bill, denominations: @remaining_denominations %>
 
 <div>
   <%= link_to "Edit this bill", edit_bill_path(@bill) %> |
   <%= link_to "Back to bills", bills_path %>
 
-  <%= button_to "Destroy this bill", @bill, method: :delete %>
+  <%= button_to "Destroy this bill", @bill, method: :delete, data: {turbo: false} %>
 </div>
