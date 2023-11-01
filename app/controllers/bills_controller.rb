@@ -23,13 +23,30 @@ class BillsController < ApplicationController
 
   # POST /bills or /bills.json
   def create
+
     @products = Product.all.pluck(:id)
     @bill = Bill.new(bill_params.slice(:customer_email, :customer_amount))
-    @bill_products = @bill.bill_products.build(bill_params.slice(:bill_products_attributes))
-    @denominations = bill_params.slice(:denominations)
-    #params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
+
+    # bill_params.slice(:bill_products_attributes).each do |key, pair|
+    #   byebug
+    #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
+    # end
+
+    bill_params[:bill_products_attributes].each do |index, attributes|
+      # Create a new bill_product associated with the bill
+      @bill_product = @bill.bill_products.build(
+        product_id: attributes[:product_id],
+        quantity: attributes[:quantity]
+      )
+      # Save the bill_product record
+      @bill_product.save
+    end
+
+
+    @bill.denominations = bill_params.slice(:denominations)
+    # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     respond_to do |format|
-      if @bill.save && @bill_products.save
+      if @bill.save
         format.html { redirect_to bill_url(@bill), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else
@@ -75,9 +92,9 @@ class BillsController < ApplicationController
     params.require(:bill).permit(
       :customer_email,
       :customer_amount,
-      :bill_products_attributes,
       # :bill_products,
-      # {bill_products_attributes: [:product_id, :quantity]},
+      # :bill_products,
+      bill_products_attributes: [:product_id, :quantity],
       # {denominations: %w[2000 500 200 100 50 10 5 2 1]}
       :denominations => {}
 

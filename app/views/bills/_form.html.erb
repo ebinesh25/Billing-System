@@ -16,31 +16,39 @@
     <%= form.text_field :customer_email %>
   </div>
   <hr>
-  <h1>Bill Section</h1>
-<!--  <div class="ajax-form">-->
-    <h2>This is displayed</h2>
-<!--    <div class="field">-->
-      <h2>This is also displayed</h2>
-      <%= form.fields_for :bill_products do |bill_product_fields| %>
-        <% bill_product_fields.object.errors.full_messages.each do |message| %>
-          <div style="color: red"><%= message %></div>
-        <% end %>
+  <div class="bill-section">
+    <h1>Bill Section</h1>
+    <div class="ajax-form">
+      <div class="field">
+        <%= form.fields_for :bill_products do |bill_product_fields| %>
+          <% bill_product_fields.object.errors.full_messages.each do |message| %>
+            <div style="color: red"><%= message %></div>
+          <% end %>
+          <div class="nested-fields">
+            <%= bill_product_fields.label :product_id, 'Product' %>
+            <%#= bill_product_fields.select :product_id, @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
+            <%= bill_product_fields.collection_select(:product_id, Product.all, :id, :id,{:prompt => true, :multiple=>false } ) %>
 
-        <h2>This is not being displayed, the form is not rendering in the html</h2>
-        <div class="nested-fields">
-          <%= bill_product_fields.label :product_id, 'Product' %>
-          <%= bill_product_fields.select :product_id, @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
+            <%= bill_product_fields.label :quantity, 'Quantity' %>
+            <%= bill_product_fields.number_field :quantity, min: 1 %>
+<!--            While make ajax call see to it that same product should not be present in two inputs FIELD-->
+          </div>
+          <% end %>
+      </div>
+    </div>
+    <div class="nested-fields">-->
+      <%#= form.label "bill_product[#{:product_id}", 'Product' %>
+      <%#= form.select "bill_product[#{:product_id}", @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
 
-          <%= bill_product_fields.label :quantity, 'Quantity' %>
-          <%= bill_product_fields.number_field :quantity, min: 1 %>
-<!--          While make ajax call see to it that same product should not be present in two inputs FIELD-->
-        </div>
-      <% end %>
-<!--    </div>-->
-<!--  </div>-->
+      <%#= form.label "bill_product[#{:quantity}", 'Quantity' %>
+      <%#= form.number_field "bill_product[#{:quantity}", min: 1 %>
+      <!--          While make ajax call see to it that same product should not be present in two inputs FIELD-->
+      <!--        </div>-->
+    </div>
+  </div>
 
   <hr>
-  <%= form.fields_for :denom do |denom_fields| %>
+
     <div>
     <% denominations = [2000, 500, 200, 100, 50, 10, 5, 2, 1 ] %>
     <% denominations.each do |denom| %>
@@ -50,8 +58,9 @@
       </div>
     <% end %>
   </div>
-<% end %>
+
   <hr>
+
   <div>
     <%= form.label :customer_amount %>
     <%#= form.number_field :customer_amount %>
