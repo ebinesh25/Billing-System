@@ -46,9 +46,6 @@ class BillsController < ApplicationController
     @denominations = bill_params.slice(:denominations)
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @remaining_denomination = remaining_denominations(@denominations)
-
-    byebug
-
     respond_to do |format|
       if @bill.save
         format.html { redirect_to bill_url(@bill, @remaining_denomination), notice: "Bill was successfully created." }

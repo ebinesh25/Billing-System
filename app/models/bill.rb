@@ -6,7 +6,4 @@ class Bill < ApplicationRecord
 
   accepts_nested_attributes_for :bill_products, allow_destroy: true
   #By default you can only create and update but can't delete allow_destroy allows to destroy the record
-
-
-
 end
