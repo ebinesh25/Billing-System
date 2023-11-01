@@ -2,7 +2,7 @@ class CreateBills < ActiveRecord::Migration[7.0]
   def change
     create_table :bills do |t|
       t.string :customer_email
-      t.float :customer_amount
+      t.decimal :customer_amount
 
       t.timestamps
     end

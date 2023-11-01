@@ -66,3 +66,7 @@ end
 
 
 gem "byebug", "~> 11.1"
+
+gem "jwt", "~> 2.7"
+
+gem "rubocop", "~> 1.57"
