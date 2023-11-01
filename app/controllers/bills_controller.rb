@@ -1,3 +1,4 @@
+require 'json_web_token'
 class BillsController < ApplicationController
   before_action :set_bill, only: %i[ show edit update destroy ]
 
@@ -8,7 +9,8 @@ class BillsController < ApplicationController
 
   # GET /bills/1 or /bills/1.json
   def show
-    @remaining_denominations = params[:denominations]
+    @remaining_denominations = JsonWebToken.decode(params[:token])
+    # Decode token without raising JWT::ExpiredSignature error
   end
 
   # GET /bills/new
@@ -24,14 +26,16 @@ class BillsController < ApplicationController
   # POST /bills or /bills.json
   def create
 
-    @products = Product.all.pluck(:id)
     @bill = Bill.new(bill_params.slice(:customer_email, :customer_amount))
 
     # bill_params.slice(:bill_products_attributes).each do |key, pair|
     #   byebug
     #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
     # end
-
+    @remaining_denomination = remaining_denominations(bill_params.slice(:denominations))
+    # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
+    @token = JWT.encode payload, nil, 'none'
+    byebug
     bill_params[:bill_products_attributes].each do |index, attributes|
       # Create a new bill_product associated with the bill
       @bill_product = @bill.bill_products.build(
@@ -42,13 +46,9 @@ class BillsController < ApplicationController
       @bill_product.save
      end
 
-
-    @denominations = bill_params.slice(:denominations)
-    # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
-    @remaining_denomination = remaining_denominations(@denominations)
     respond_to do |format|
-      if @bill.save
-        format.html { redirect_to bill_url(@bill, @remaining_denomination), notice: "Bill was successfully created." }
+      if @bill.persisted?
+        format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -60,7 +60,7 @@ class BillsController < ApplicationController
   # PATCH/PUT /bills/1 or /bills/1.json
   def update
     respond_to do |format|
-      if @bill.update(bill_params)
+      if @bill.update(bill_params.slice(:customer_email, :customer_amount))
         format.html { redirect_to bill_url(@bill), notice: "Bill was successfully updated." }
         format.json { render :show, status: :ok, location: @bill }
       else
@@ -101,25 +101,43 @@ class BillsController < ApplicationController
 
       )
   end
+  #
+  # def remaining_denominations(denominations)
+  #   customer_amount = bill_params[:customer_amount].to_i
+  #   denominations.each do |_, denoms|
+  #     denoms.each do |denom, _|
+  #       # count = self.customer_amount / denom.to_i
+  #       count = customer_amount.div(denom.to_i) #Does floor division
+  #       if count > 0
+  #         denoms[denom] = denoms[denom].to_i - count
+  #         @bill.customer_amount  %= denom.to_i
+  #       end
+  #     end
+  #   end
+  #
+  #   denominations
+  # end
 
   def remaining_denominations(denominations)
-    denominations.each do |_, denoms|
-      denoms.each do |denom, _|
-        # count = self.customer_amount / denom.to_i
-        count = @bill.customer_amount.div(denom.to_i) #Does floor division
-        if count > 0
-          denoms[denom] = denoms[denom].to_i - count
-          @bill.customer_amount  %= denom.to_i
-        end
+    customer_amount = params[:bill][:customer_amount].to_i
+    denominations = denominations["denominations"].transform_keys(&:to_i)
+
+    denominations.each do |denom, count|
+      needed_count = customer_amount / denom
+      if count.to_i > 0
+        given_count = [count.to_i, needed_count].min
+        customer_amount -= given_count * denom
+        denominations[denom] = denominations[denom].to_i - given_count
       end
     end
 
-    denominations
+    denominations.transform_keys(&:to_s)
   end
 
 
 
-    # def bill_params
+
+  # def bill_params
     #   params.require(:bill).permit(:customer_email, :customer_amount)
     # end
     #
