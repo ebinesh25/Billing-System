@@ -13,6 +13,7 @@ class BillsController < ApplicationController
   # GET /bills/new
   def new
     @bill = Bill.new
+    @products = Product.pluck(:id)
   end
 
   # GET /bills/1/edit
@@ -22,7 +23,6 @@ class BillsController < ApplicationController
   # POST /bills or /bills.json
   def create
     @bill = Bill.new(bill_params)
-
     respond_to do |format|
       if @bill.save
         format.html { redirect_to bill_url(@bill), notice: "Bill was successfully created." }
@@ -66,5 +66,13 @@ class BillsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def bill_params
       params.require(:bill).permit(:customer_email, :customer_amount)
+    end
+
+    def bill_product_params
+      params.require(:bill).permit(:bill_products)
+    end
+
+      def denominations_params
+      params.require(:bill).permit(:denominations)
     end
 end

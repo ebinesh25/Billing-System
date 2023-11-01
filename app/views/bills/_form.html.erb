@@ -1,4 +1,4 @@
-<%= form_with(model: bill) do |form| %>
+<%= form_with(model: bill, local: true)  do |form| %>
   <% if bill.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(bill.errors.count, "error") %> prohibited this bill from being saved:</h2>
@@ -15,12 +15,42 @@
     <%= form.label :customer_email, style: "display: block" %>
     <%= form.text_field :customer_email %>
   </div>
+  <hr>
+  <h1>Bill Section</h1>
+  <div class="ajax-form">
+<!--    <div class="field">-->
+      <%#= form.label :selected_product_id, 'Select a Product' %>
+      <%#= form.select :selected_product_id, @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
+<!--    </div>-->
+<!--    <div class="field">-->
+      <%#= form.label :quantity %>
+      <%#= form.number_field :quantity, min: 1 %>
+<!--    </div>-->
+    <%# Nested fields for bill_product including quantity %>
+    <%= form.fields_for :bill_products do |bill_product_fields| %>
+      <div class="nested-fields">
+        <%= bill_product_fields.label :product_id, 'Product' %>
+        <%= bill_product_fields.select :product_id, @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
 
-  <div>
-    <%= form.label :customer_amount, style: "display: block" %>
-    <%= form.text_field :customer_amount %>
+        <%= bill_product_fields.label :quantity, 'Quantity' %>
+        <%= bill_product_fields.number_field :quantity, min: 1 %>
+<!--        While make ajax call see to it that same product should not be present in two inputs fielad-->
+      </div>
+    <% end %>
   </div>
 
+  <hr>
+  <%= form.fields_for :denom do |denom_fields| %>
+    <div>
+    <% denominations = [2000, 500, 200, 100, 50, 10, 5, 2, 1 ] %>
+    <% denominations.each do |denom| %>
+      <div>
+        <%= form.label "denominations[#{denom}]", denom ,style: "display: block" %>
+        <%= form.number_field "denominations[#{denom}]" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
   <div>
     <%= form.submit %>
   </div>

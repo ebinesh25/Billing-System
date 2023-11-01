@@ -64,3 +64,5 @@ group :development do
   # gem "spring"
 end
 
+
+gem "byebug", "~> 11.1"
