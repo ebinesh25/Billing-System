@@ -43,9 +43,12 @@ class BillsController < ApplicationController
      end
 
 
-    @bill.denominations = bill_params.slice(:denominations)
+    @denominations = bill_params.slice(:denominations)
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
-    @remaining_denomination = @bill.remaining_denominations
+    @remaining_denomination = remaining_denominations(@denominations)
+
+    byebug
+
     respond_to do |format|
       if @bill.save
         format.html { redirect_to bill_url(@bill, @remaining_denomination), notice: "Bill was successfully created." }
@@ -101,6 +104,23 @@ class BillsController < ApplicationController
 
       )
   end
+
+  def remaining_denominations(denominations)
+    denominations.each do |_, denoms|
+      denoms.each do |denom, _|
+        # count = self.customer_amount / denom.to_i
+        count = @bill.customer_amount.div(denom.to_i) #Does floor division
+        if count > 0
+          denoms[denom] = denoms[denom].to_i - count
+          @bill.customer_amount  %= denom.to_i
+        end
+      end
+    end
+
+    denominations
+  end
+
+
 
     # def bill_params
     #   params.require(:bill).permit(:customer_email, :customer_amount)
