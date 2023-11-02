@@ -9,7 +9,11 @@ class BillsController < ApplicationController
 
   # GET /bills/1 or /bills/1.json
   def show
-    @remaining_denominations = JsonWebToken.decode(params[:token])
+    if params[:token]
+      # @remaining_denominations = JsonWebToken.decode(params[:token])
+      token_as_array = JWT.decode params[:token], nil, false
+      @remaining_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
+    end
     # Decode token without raising JWT::ExpiredSignature error
   end
 
@@ -32,10 +36,11 @@ class BillsController < ApplicationController
     #   byebug
     #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
     # end
-    @remaining_denomination = remaining_denominations(bill_params.slice(:denominations))
+    @remaining_denominations = remaining_denominations(bill_params.slice(:denominations))
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
-    @token = JWT.encode payload, nil, 'none'
-    byebug
+    @token = JWT.encode @remaining_denominations, nil, 'none'
+
+
     bill_params[:bill_products_attributes].each do |index, attributes|
       # Create a new bill_product associated with the bill
       @bill_product = @bill.bill_products.build(
@@ -47,7 +52,8 @@ class BillsController < ApplicationController
      end
 
     respond_to do |format|
-      if @bill.persisted?
+      # if @bill.persisted?
+      if @bill.save
         format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else
