@@ -12,6 +12,7 @@ class BillsController < ApplicationController
     if params[:token]
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
+      byebug
       @remaining_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
     end
     # Decode token without raising JWT::ExpiredSignature error
@@ -40,7 +41,6 @@ class BillsController < ApplicationController
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @token = JWT.encode @remaining_denominations, nil, 'none'
 
-
     bill_params[:bill_products_attributes].each do |index, attributes|
       # Create a new bill_product associated with the bill
       @bill_product = @bill.bill_products.build(
@@ -52,8 +52,8 @@ class BillsController < ApplicationController
      end
 
     respond_to do |format|
-      # if @bill.persisted?
-      if @bill.save
+      if @bill.persisted?
+      # if @bill.save
         format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else

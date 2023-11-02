@@ -1,0 +1,7 @@
+<%= bill_product_fields.label :product_id, 'Product' %>
+<%#= bill_product_fields.select :product_id, @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
+<%= bill_product_fields.collection_select(:product_id, Product.all, :id, :id,{:prompt => true, :multiple=>false } ) %>
+
+<%= bill_product_fields.label :quantity, 'Quantity' %>
+<%= bill_product_fields.number_field :quantity, min: 1 %>
+<!--            While make ajax call see to it that same product should not be present in two inputs FIELD-->
