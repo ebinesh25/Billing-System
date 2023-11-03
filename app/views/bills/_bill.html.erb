@@ -35,8 +35,8 @@
       <div>
         <strong>denominations:</strong>
         <ul>
-          <%= denominations.each do |rupee, count| %>
-            <li><%= rupee %> : <%= count %></li>
+          <% denominations.each do |rupee, count| %>
+            <li><%= "#{rupee} :  #{count}" %></li>
           <% end %>
         </ul>
       </div>
@@ -49,11 +49,9 @@
   </div>
 
   <div class="footer">
-    Total Price Without Tax : <%= @bill_products.sum(:purchased_price) %> <br>
-    Total Tax Payable       : <%= @bill_products.sum(:tax_payable) %> <br>
-    Net Price               : <%= @bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable) %> <br>
-    Rounded Price           : <%= (@bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable)).round(2) %> <br>
-    Balance to Customer     : <%= bill.customer_amount - (@bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable)).round(2) %> <br>
+    <% @calculate_price_for_user.each do |message, price| %>
+      <%= "#{message} : #{price}" %>
+    <% end %>
   </div>
 
 </div>

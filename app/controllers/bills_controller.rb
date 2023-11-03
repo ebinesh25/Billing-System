@@ -14,6 +14,7 @@ class BillsController < ApplicationController
       token_as_array = JWT.decode params[:token], nil, false
       @remaining_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
       @bill_products = @bill.bill_products
+      @calculate_price_for_user = @bill.calculate_balance_to_customer
     end
     # Decode token without raising JWT::ExpiredSignature error
   end
