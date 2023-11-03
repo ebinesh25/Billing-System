@@ -1,4 +1,4 @@
-<%= form_with(model: bill, local: true, data: {turbo: false})  do |form| %>
+<%= form_with(model: bill, local: true, data: {turbo: false}, id: "bill-form")  do |form| %>
   <% if bill.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(bill.errors.count, "error") %> prohibited this bill from being saved:</h2>
@@ -18,26 +18,18 @@
   <hr>
   <div class="bill-section">
     <h1>Bill Section</h1>
-    <div class="ajax-form">
-      <div class="field">
-        <%= form.fields_for :bill_products do |bill_product_fields| %>
-          <% bill_product_fields.object.errors.full_messages.each do |message| %>
-            <div style="color: red"><%= message %></div>
-          <% end %>
-          <div class="nested-fields">
-            <%= render "_bill_product_form", bill_product_fields: bill_product_fields %>
-          </div>
-          <% end %>
-      </div>
-    </div>
-    <div class="nested-fields">-->
-      <%#= form.label "bill_product[#{:product_id}", 'Product' %>
-      <%#= form.select "bill_product[#{:product_id}", @products, { include_blank: 'Select a product' }, { class: 'form-control' } %>
+    <div class="bill_products">
+      <%= form.fields_for :bill_products do |bill_product| %>
+          <%= render "bills/bill_product_fields", f: bill_product %>
+    <% end %>
 
-      <%#= form.label "bill_product[#{:quantity}", 'Quantity' %>
-      <%#= form.number_field "bill_product[#{:quantity}", min: 1 %>
-      <!--          While make ajax call see to it that same product should not be present in two inputs FIELD-->
-      <!--        </div>-->
+      <div class="links">
+<!--        <%#= link_to_add_association "Add products", fields, :bill_products %> #=> Error-->
+        <%= link_to_add_association "Add products", form, :bill_products %>
+        <!--    , data: {association_insertion_node: '.bill_products', association_insertion_method: :append}      -->
+        <!--          , partial: 'bills/bill_product_form'-->
+      </div>
+
     </div>
   </div>
 
@@ -46,8 +38,9 @@
     <div>
     <% denominations = [2000, 500, 200, 100, 50, 10, 5, 2, 1 ] %>
     <% denominations.each do |denom| %>
-      <div>
+      <div style="display: inline-flex; margin: 10px">
         <%= form.label "denominations[#{denom}]", denom ,style: "display: block" %>
+        <span style="margin: 10px"></span>
         <%= form.number_field "denominations[#{denom}]" %>
       </div>
     <% end %>
@@ -63,5 +56,13 @@
   </div>
   <div>
     <%= form.submit %>
+    <%= form.button 'Cancel', type: 'button', id: 'cancelButton' %>
   </div>
 <% end %>
+
+<script>
+    $('#cancelButton').on('click', function() {
+        $('#bill-form')[0].reset(); // This clears all fields within the form
+    });
+
+</script>

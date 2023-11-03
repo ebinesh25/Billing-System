@@ -12,7 +12,6 @@ class BillsController < ApplicationController
     if params[:token]
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
-      byebug
       @remaining_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
     end
     # Decode token without raising JWT::ExpiredSignature error
@@ -34,26 +33,15 @@ class BillsController < ApplicationController
     @bill = Bill.new(bill_params.slice(:customer_email, :customer_amount))
 
     # bill_params.slice(:bill_products_attributes).each do |key, pair|
-    #   byebug
     #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
     # end
     @remaining_denominations = remaining_denominations(bill_params.slice(:denominations))
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @token = JWT.encode @remaining_denominations, nil, 'none'
 
-    bill_params[:bill_products_attributes].each do |index, attributes|
-      # Create a new bill_product associated with the bill
-      @bill_product = @bill.bill_products.build(
-        product_id: attributes[:product_id],
-        quantity: attributes[:quantity]
-      )
-      # Save the bill_product record
-      @bill_product.save
-     end
-
     respond_to do |format|
-      if @bill.persisted?
-      # if @bill.save
+      if @bill.save
+        build_bill_products #=> is called to save the fields of nested attributes in DB once bill is save successfully
         format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
         format.json { render :show, status: :created, location: @bill }
       else
@@ -100,11 +88,10 @@ class BillsController < ApplicationController
       :customer_email,
       :customer_amount,
       # :bill_products,
-      # :bill_products,
-      bill_products_attributes: [:product_id, :quantity],
-      # {denominations: %w[2000 500 200 100 50 10 5 2 1]}
-      :denominations => {}
-
+      :bill_products,
+      bill_products_attributes: %i[:id :product_id :quantity :_destroy], #=> :_destroy is permitted to destroy the field
+      # :bill_products_attributes => {}, #=> :_destroy is permitted to destroy the field
+      denominations: %w[2000 500 200 100 50 10 5 2 1]
       )
   end
   #
@@ -124,6 +111,17 @@ class BillsController < ApplicationController
   #   denominations
   # end
 
+  def build_bill_products
+    bill_params[:bill_products_attributes].each do |index, attributes|
+      # Create a new bill_product associated with the bill
+      @bill_product = @bill.bill_products.build(
+        product_id: attributes[:product_id],
+        quantity: attributes[:quantity]
+      )
+      # Save the bill_product record
+      @bill_product.save
+    end
+  end
   def remaining_denominations(denominations)
     customer_amount = params[:bill][:customer_amount].to_i
     denominations = denominations["denominations"].transform_keys(&:to_i)
@@ -144,16 +142,16 @@ class BillsController < ApplicationController
 
 
   # def bill_params
-    #   params.require(:bill).permit(:customer_email, :customer_amount)
-    # end
-    #
-    # def bill_product_params
-    # params.require(:bill).permit( :bill_products,
-    #                               bill_products_attributes: [:product_id, :quantity] )
-    # end
-    # #
-    #   def denominations_params
-    #   params.require(:bill).permit( denominations: %w[2000 500 200 100 50 10 5 2 1] )
-    # end
+  #     params.require(:bill).permit(:customer_email, :customer_amount)
+  #   end
+  #
+  #   def bill_product_params
+  #   params.require(:bill).permit( :bill_products,
+  #                                 bill_products_attributes: [:product_id, :quantity] )
+  #   end
+  #   #
+  #   def denominations_params
+  #     params.require(:bill).permit( denominations: %w[2000 500 200 100 50 10 5 2 1] )
+  #   end
 end
 

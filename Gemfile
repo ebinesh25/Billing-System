@@ -70,3 +70,9 @@ gem "byebug", "~> 11.1"
 gem "jwt", "~> 2.7"
 
 gem "rubocop", "~> 1.57"
+
+gem "cocoon", "~> 1.2"
+
+gem "rails-ujs", "~> 0.1.0"
+
+gem "jquery-rails", "~> 4.6"
