@@ -1,23 +1,75 @@
 <div id="<%= dom_id bill %>">
-  <p>
-    <strong>Customer email:</strong>
-    <%= bill.customer_email %>
-  </p>
-
-  <% if params[:action] === 'show' && params[:token].present? %>
-  <div>
-    <strong>denominations:</strong>
-    <ul>
-      <%= denominations.each do |rupee, count| %>
-        <li><%= rupee %> => <%= count %></li>
-      <% end %>
-    </ul>
+  <h1>Billing System</h1>
+  <h3>Bill ID #<%= @bill.id %></h3>
+  <div class="email">
+    <p>
+      <strong>Customer email:</strong>
+      <%= bill.customer_email %>
+    </p>
   </div>
-<% end %>
 
-  <p>
+  <div class="bill-section">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Purchased Price</th>
+        <th>Tax % for Item</th>
+        <th>Tax payable for Item</th>
+        <th>Total Price of Item</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- Add rows and data here -->
+      <%= render "product_prices", bill_products:  @bill_products %>
+
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="denominations">
+    <% if params[:action] === 'show' && params[:token].present? %>
+      <div>
+        <strong>denominations:</strong>
+        <ul>
+          <%= denominations.each do |rupee, count| %>
+            <li><%= rupee %> : <%= count %></li>
+          <% end %>
+        </ul>
+      </div>
+   <% end %>
+  </div>
+
+  <div class="amount">
     <strong>Customer amount:</strong>
     <%= bill.customer_amount %>
-  </p>
+  </div>
+
+  <div class="footer">
+    Total Price Without Tax : <%= @bill_products.sum(:purchased_price) %> <br>
+    Total Tax Payable       : <%= @bill_products.sum(:tax_payable) %> <br>
+    Net Price               : <%= @bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable) %> <br>
+    Rounded Price           : <%= (@bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable)).round(2) %> <br>
+    Balance to Customer     : <%= bill.customer_amount - (@bill_products.sum(:purchased_price) + @bill_products.sum(:tax_payable)).round(2) %> <br>
+  </div>
 
 </div>
+
+<style>
+    /* Custom CSS for the table */
+    .table thead th {
+        background-color: #d7d1d1; /* Light grey for heading background */
+    }
+    .table tbody {
+        background-color: #daeef3; /* Powdered blue for body background */
+    }
+    .footer{
+        background-color: #d7d1d1;
+        margin: 1em;
+        padding: 1em;
+        text-align: right;
+    }
+</style>

@@ -1,0 +1,13 @@
+
+<% bill_products.each do |bill_product| %>
+<tr>
+  <td><%= bill_product.product_id %></td>
+  <td>₹<%= bill_product.product.unit_price %></td>
+  <td><%= bill_product.quantity %></td>
+  <td>₹<%= bill_product.purchased_price %></td>
+  <td><%= bill_product.product.tax_percent %>%</td>
+  <td>₹<%= bill_product.tax_payable %></td>
+  <td>₹<%= bill_product.total_price %></td>
+
+</tr>
+<% end %>
