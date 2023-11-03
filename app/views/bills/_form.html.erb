@@ -13,18 +13,16 @@
 
   <div>
     <%= form.label :customer_email, style: "display: block" %>
-    <%= form.text_field :customer_email %>
+    <%= form.email_field :customer_email , required: true%>
   </div>
   <hr>
   <div class="bill-section">
-    <h1>Bill Section</h1>
     <div class="bill_products">
       <%= form.fields_for :bill_products do |bill_product| %>
-          <%= render "bills/bill_product_fields", f: bill_product %>
+        <%= render "bills/bill_product_fields", f: bill_product %>
     <% end %>
 
       <div class="links">
-<!--        <%#= link_to_add_association "Add products", fields, :bill_products %> #=> Error-->
         <%= link_to_add_association "Add products", form, :bill_products %>
         <!--    , data: {association_insertion_node: '.bill_products', association_insertion_method: :append}      -->
         <!--          , partial: 'bills/bill_product_form'-->
@@ -52,7 +50,7 @@
     <%= form.label :customer_amount %>
     <%#= form.number_field :customer_amount %>
     <%#= form.number_field :customer_amount, value: number_to_currency(form.object.customer_amount.to_f, delimiter: '', unit: ''), step: :any %>
-    <%= form.number_field :customer_amount, step: :any %>
+    <%= form.number_field :customer_amount, step: :any, required: true %>
   </div>
   <div>
     <%= form.submit %>
@@ -64,5 +62,4 @@
     $('#cancelButton').on('click', function() {
         $('#bill-form')[0].reset(); // This clears all fields within the form
     });
-
 </script>

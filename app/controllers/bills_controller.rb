@@ -42,8 +42,13 @@ class BillsController < ApplicationController
     respond_to do |format|
       if @bill.save
         build_bill_products #=> is called to save the fields of nested attributes in DB once bill is save successfully
-        format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
-        format.json { render :show, status: :created, location: @bill }
+        unless @not_saved_attributes.present?
+          format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
+          format.json { render :show, status: :created, location: @bill }
+        else
+          format.html {redirect_to request.referer, notice: "You can chose a Product ID only once" }
+          format.json { render json: @bill.errors, status: :unprocessable_entity }
+        end
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @bill.errors, status: :unprocessable_entity }
@@ -88,38 +93,25 @@ class BillsController < ApplicationController
       :customer_email,
       :customer_amount,
       # :bill_products,
-      :bill_products,
-      bill_products_attributes: %i[:id :product_id :quantity :_destroy], #=> :_destroy is permitted to destroy the field
-      # :bill_products_attributes => {}, #=> :_destroy is permitted to destroy the field
+      # bill_products_attributes: %i[:id :product_id :quantity :_destroy], #=> :_destroy is permitted to destroy the field
+      :bill_products_attributes => {}, #=> :_destroy is permitted to destroy the field
       denominations: %w[2000 500 200 100 50 10 5 2 1]
       )
   end
-  #
-  # def remaining_denominations(denominations)
-  #   customer_amount = bill_params[:customer_amount].to_i
-  #   denominations.each do |_, denoms|
-  #     denoms.each do |denom, _|
-  #       # count = self.customer_amount / denom.to_i
-  #       count = customer_amount.div(denom.to_i) #Does floor division
-  #       if count > 0
-  #         denoms[denom] = denoms[denom].to_i - count
-  #         @bill.customer_amount  %= denom.to_i
-  #       end
-  #     end
-  #   end
-  #
-  #   denominations
-  # end
-
   def build_bill_products
     bill_params[:bill_products_attributes].each do |index, attributes|
       # Create a new bill_product associated with the bill
+      @not_saved_attributes = {}
       @bill_product = @bill.bill_products.build(
         product_id: attributes[:product_id],
         quantity: attributes[:quantity]
       )
       # Save the bill_product record
-      @bill_product.save
+      if @bill_product.save
+        @all_saved = true
+      else
+        @not_saved_attributes[attributes[:product_id]] = attributes[:quantity]
+      end
     end
   end
   def remaining_denominations(denominations)
@@ -137,21 +129,5 @@ class BillsController < ApplicationController
 
     denominations.transform_keys(&:to_s)
   end
-
-
-
-
-  # def bill_params
-  #     params.require(:bill).permit(:customer_email, :customer_amount)
-  #   end
-  #
-  #   def bill_product_params
-  #   params.require(:bill).permit( :bill_products,
-  #                                 bill_products_attributes: [:product_id, :quantity] )
-  #   end
-  #   #
-  #   def denominations_params
-  #     params.require(:bill).permit( denominations: %w[2000 500 200 100 50 10 5 2 1] )
-  #   end
 end
 

@@ -3,12 +3,12 @@
   <span class="list-all-products field">
   <%= f.label :product_id, 'Product' %>
   <%# non_billed_products = @bill.products ? Product.all - @bill.products : Product.all %>
-  <%= f.collection_select(:product_id, Product.all, :id, :id,{:prompt => true, :multiple=>false } ) %>
+  <%= f.collection_select(:product_id, Product.all, :id, :id,{:prompt => true, :multiple=>false }, required: true ) %>
   </span>
 
   <span class="quantity field">
   <%= f.label :quantity, 'Quantity' %>
-  <%= f.number_field :quantity, min: 1 %>
+  <%= f.number_field :quantity, min: 1, required: true %>
 <!--           While make ajax call see to it that same product should not be present in two inputs FIELD-->
   </span>
 

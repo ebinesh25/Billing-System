@@ -4,13 +4,13 @@ class BillProduct < ApplicationRecord
 
   before_save :calculate_prices
 
-  def calculate_prices
-    product = self.product
+  validates :product_id, presence: true, uniqueness: { scope: :bill_id, message: "You can enter product only once"}
+  validates :quantity, presence: true, numericality: true
 
-    self.purchased_price = self.quantity * product.unit_price
-    self.tax_payable = self.purchased_price * (product.tax_percent/100)
-    self.total_price = self.purchased_price + self.tax_payable
-    #why self is used here
+  def calculate_prices
+    self.purchased_price = quantity * product.unit_price
+    self.tax_payable = purchased_price * (product.tax_percent/100)
+    self.total_price = purchased_price + tax_payable
   end
 
 end

@@ -1,0 +1,13 @@
+<div>
+  <% if bill_products.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(bill_product.errors.count, "error") %> prohibited this record from being saved:</h2>
+
+      <ul>
+        <% bill_product.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>
