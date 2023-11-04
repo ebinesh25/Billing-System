@@ -11,52 +11,59 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :customer_email, style: "display: block" %>
-    <%= form.email_field :customer_email , required: true%>
+  <div class="customer-email" >
+    <%= form.label :customer_email, style: "display: block", class: "py-5 " %>
+    <%= form.email_field :customer_email , required: true, class: "border-0 p-2 mx-3 rounded", placeholder: "Enter Email Address" %>
   </div>
   <hr>
   <div class="bill-section">
-    <div class="bill_products">
-      <%= form.fields_for :bill_products do |bill_product| %>
-        <%= render "bills/bill_product_fields", f: bill_product %>
-    <% end %>
+    <div class="d-flex flex-row align-items-center">
+      <h3 class="mr-3">Bill Section</h3>
+    </div>
+    <br>
+    <div class="all-nested-fields">
+      <table>
+        <tbody>
+          <%= form.fields_for :bill_products do |bill_product| %>
+            <%= render "bills/bill_product_fields", f: bill_product %>
+          <% end %>
+        </tbody>
+      </table>
 
-      <div class="links">
-        <%= link_to_add_association "Add products", form, :bill_products %>
-        <!--    , data: {association_insertion_node: '.bill_products', association_insertion_method: :append}      -->
-        <!--          , partial: 'bills/bill_product_form'-->
-      </div>
+      <br>
+
+      <%= link_to_add_association "Add products", form, :bill_products, {id: "bill-sec-button", class: "border-0 rounded text-light px-5 py-2"} %>
+
 
     </div>
   </div>
 
+
   <hr>
 
+    <table class="table table-borderless">
+      <tbody>
+        <%= render "denominations" , form: form %>
+      </tbody>
+  </table>
+
+  <hr>
+
+  <div class="container p-4 " style="background-color: #f2f2f2 ; display: inline-flex; justify-content: space-between">
     <div>
-    <% denominations = [2000, 500, 200, 100, 50, 10, 5, 2, 1 ] %>
-    <% denominations.each do |denom| %>
-      <div style="display: inline-flex; margin: 10px">
-        <%= form.label "denominations[#{denom}]", denom ,style: "display: block" %>
-        <span style="margin: 10px"></span>
-        <%= form.number_field "denominations[#{denom}]" %>
-      </div>
-    <% end %>
-  </div>
-
-  <hr>
-
-  <div>
-    <%= form.label :customer_amount %>
-    <%#= form.number_field :customer_amount %>
-    <%#= form.number_field :customer_amount, value: number_to_currency(form.object.customer_amount.to_f, delimiter: '', unit: ''), step: :any %>
-    <%= form.number_field :customer_amount, step: :any, required: true %>
-  </div>
-  <div>
-    <%= form.submit %>
-    <%= form.button 'Cancel', type: 'button', id: 'cancelButton' %>
-  </div>
-<% end %>
+      <%= form.label :customer_amount, class: "my-4" %>
+      <%= form.number_field :customer_amount, value: number_to_currency(form.object.customer_amount.to_f, delimiter: ',', unit: '₹'),
+                                              step: :any,
+                                              class: "bg-light border rounded p-2 my-4 mx-3",
+                                              placeholder: "Amount" %>
+      <%#= form.number_field :customer_amount, step: :any, required: true %>
+    </div>
+    <div class="float-right my-4" >
+      <%= form.button 'Cancel', type: 'button', id: 'cancelButton',class: "btn bg-light rounded px-5 py-2" %>
+      <%= form.submit class: 'border rounded px-5 py-2', id: "bill-generate-btn" %>
+    </div>
+  <% end %>
+</div>
 
 <script>
     $('#cancelButton').on('click', function() {

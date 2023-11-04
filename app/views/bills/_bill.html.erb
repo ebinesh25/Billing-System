@@ -1,6 +1,7 @@
+
+<% if params[:action] === "show" %>
 <div id="<%= dom_id bill %>">
   <h1>Billing System</h1>
-  <h3>Bill ID #<%= @bill.id %></h3>
   <div class="email">
     <p>
       <strong>Customer email:</strong>
@@ -22,7 +23,6 @@
       </tr>
       </thead>
       <tbody>
-      <!-- Add rows and data here -->
       <%= render "product_prices", bill_products:  @bill_products %>
 
       </tbody>
@@ -50,7 +50,7 @@
 
   <div class="footer">
     <% @calculate_price_for_user.each do |message, price| %>
-      <%= "#{message} : #{price}" %>
+      <%= "#{message} : #{price}" %> <br>
     <% end %>
   </div>
 
@@ -71,3 +71,6 @@
         text-align: right;
     }
 </style>
+<% else %>
+ Nothing to show here
+<% end %>

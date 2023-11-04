@@ -1,23 +1,25 @@
 <div class="nested-fields">
 
   <span class="list-all-products field">
-  <%= f.label :product_id, 'Product' %>
   <%# non_billed_products = @bill.products ? Product.all - @bill.products : Product.all %>
-  <%= f.collection_select(:product_id, Product.all, :id, :id,{:prompt => true, :multiple=>false }, required: true ) %>
+  <%= f.collection_select(:product_id, Product.all, :id, :id,{:prompt => "Product ID", :multiple=>false }, required: true,  class: "form-field", id: "bill-sec-quantity" ) %>
   </span>
 
   <span class="quantity field">
-  <%= f.label :quantity, 'Quantity' %>
-  <%= f.number_field :quantity, min: 1, required: true %>
+  <%#= f.label :quantity, 'Quantity', class: "form-field", id: "bill-sec-quantity" %>
+  <%= f.number_field :quantity, min: 1, required: true, id: "bill-sec-quantity", placeholder: "Quantity", style: "border: none;" %>
 <!--           While make ajax call see to it that same product should not be present in two inputs FIELD-->
   </span>
 
   <span class="links">
-    <%= link_to_remove_association "remove task", f %>
+    <%= link_to_remove_association "Delete", f, id:"danger-btn"  %>
   </span>
   <br>
 
 </div>
 
+<style>
 
+
+</style>
 

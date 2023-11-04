@@ -1,0 +1,28 @@
+<% denominations = [2000, 500, 200, 100, 50, 10, 20, 5, 2, 1  ] %>
+<%# denominations.each_index  do |denom| %>
+<% (0..(denominations.length - 2)).step(2).each do |index| %>
+  <!--          <div style="display: inline-flex; margin: 10px">-->
+    <tr>
+      <td>
+        <%= form.label "denominations[#{denominations[index]}]", denominations[index] ,style: "display: block" %>
+      </td>
+      <td>
+        <%= form.number_field "denominations[#{denominations[index]}]", class: "form-control", placeholder: "Quantity" %>
+      </td>
+      <td>
+        <%= form.label "denominations[#{denominations[index+1]}]", denominations[index+1] ,style: "display: block" %>
+      </td>
+      <td>
+        <%= form.number_field "denominations[#{denominations[index+1] }]", class: "form-control", placeholder: "Quantity" %>
+      </td>
+    </tr>
+<% end %>
+
+<style>
+    .form-control{
+        border: none;
+        border-radius: 5px;
+        background-color: #eff6ff;
+        width: 200px;
+    }
+</style>

@@ -97,7 +97,8 @@ class BillsController < ApplicationController
       # :bill_products,
       # bill_products_attributes: %i[:id :product_id :quantity :_destroy], #=> :_destroy is permitted to destroy the field
       :bill_products_attributes => {}, #=> :_destroy is permitted to destroy the field
-      denominations: %w[2000 500 200 100 50 10 5 2 1]
+      # denominations: %w[2000 500 200 100 50 10 5 2 1]
+      denominations: {}
       )
   end
   def build_bill_products
