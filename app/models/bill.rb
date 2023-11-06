@@ -8,10 +8,10 @@ class Bill < ApplicationRecord
   validates :customer_amount, presence: true
 
   def calculate_balance_to_customer
-    total_price_without_tax = bill_products.sum(:purchased_price)
-    total_tax_payable = bill_products.sum(:tax_payable)
-    net_price = total_price_without_tax + total_tax_payable
-    rounded_price = net_price.round(2)
+    total_price_without_tax = bill_products.sum(:purchased_price).round(2)
+    total_tax_payable = bill_products.sum(:tax_payable).round(2)
+    net_price = (total_price_without_tax + total_tax_payable).round(2)
+    rounded_price = net_price.round(0)
     balance_amount = customer_amount - rounded_price
 
     {

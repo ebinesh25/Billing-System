@@ -1,0 +1,20 @@
+<table class="denominations">
+  <tbody >
+  <%# (0..(denominations.length - 2)).step(2).each do |index| %>
+  <% denominations.each_slice(2) do |pair|  %>
+    <tr style="padding: 1em" >
+      <% pair.each do |rupee, count| %>
+        <td >
+          <%= "#{rupee}" %>
+        </td>
+        <td class="form-control" >
+          <%= "#{count}" %>
+        </td>
+        <td>
+          &nbsp
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

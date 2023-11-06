@@ -1,18 +1,19 @@
 
 <% if params[:action] === "show" %>
-<div id="<%= dom_id bill %>">
+<!--<id="<%#= dom_id bill %>">-->
   <h1>Billing System</h1>
-  <div class="email">
-    <p>
-      <strong>Customer email:</strong>
-      <%= bill.customer_email %>
-    </p>
-  </div>
-
+  <br>
+  <p>
+    <strong>Customer email:</strong>
+    <%= bill.customer_email %>
+  </p>
+  <br>
+  <h3>Billing System</h3>
+  <br>
   <div class="bill-section">
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="first_table">
       <thead>
-      <tr>
+      <tr class="text-center" style="background-color: #f2f2f2;" >
         <th>Product ID</th>
         <th>Unit Price</th>
         <th>Quantity</th>
@@ -24,39 +25,36 @@
       </thead>
       <tbody>
       <%= render "product_prices", bill_products:  @bill_products %>
-
       </tbody>
     </table>
-
   </div>
 
-  <div class="denominations">
-    <% if params[:action] === 'show' && params[:token].present? %>
-      <div>
-        <strong>denominations:</strong>
-        <ul>
-          <% denominations.each do |rupee, count| %>
-            <li><%= "#{rupee} :  #{count}" %></li>
-          <% end %>
-        </ul>
-      </div>
-   <% end %>
-  </div>
+  <br>
+  <br>
+  <h3>Balance Denominations</h3>
+  <br>
 
-  <div class="amount">
-    <strong>Customer amount:</strong>
-    <%= bill.customer_amount %>
-  </div>
+  <% if params[:action] === 'show' && params[:token].present? %>
+    <%= render "show_denominations", denominations: @remaining_denominations %>
+ <% end %>
 
-  <div class="footer">
-    <% @calculate_price_for_user.each do |message, price| %>
-      <%= "#{message} : #{price}" %> <br>
-    <% end %>
+  <div  class="container d-flex justify-content-end" style="background-color: #f2f2f2;">
+    <table>
+      <tbody>
+        <%= render "customer_amount" %>
+      </tbody>
+    </table>
   </div>
-
-</div>
 
 <style>
+
+    .form-control{
+        border: none;
+        border-radius: 5px;
+        background-color: #eff6ff;
+        width: 200px;
+    }
+
     /* Custom CSS for the table */
     .table thead th {
         background-color: #d7d1d1; /* Light grey for heading background */

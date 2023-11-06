@@ -105,3 +105,8 @@ label + input{
     flex: 1;
     margin: 0 30px;
 }
+
+.denominations {
+    border-collapse: separate; /* This ensures that border-spacing works */
+    border-spacing: 2em; /* Adjust this value to increase or decrease the space */
+}

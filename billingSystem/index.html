@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Billing System</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <!-- external css -->
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container p-4 bg-light">
+      <h3>Billing System</h3>
+      <label class="py-5">Customer email</label>
+      <input class="border-0 p-2 mx-3 rounded" placeholder="Enter Email Address" />
+      <hr />
+      <br>
+      <div class="d-flex flex-row">
+      
+        <h3>Bill Section</h3>
+        <button id="bill-sec-button" class="border-0 rounded text-light px-5 py-2">Add new</button>
+      </div>
+      <br>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <select class="form-select" aria-label="Default select example">
+                <option selected>Product ID</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <select
+                class="form-select"
+                id="bill-sec-quantity"
+                aria-label="Default select example"
+              >
+                <option selected>Quantity</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <button id="danger-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select class="form-select" aria-label="Default select example">
+                <option selected>Product ID</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <select
+                class="form-select"
+                id="bill-sec-quantity"
+                aria-label="Default select example"
+              >
+                <option selected>Quantity</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <button id="danger-btn">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select class="form-select" aria-label="Default select example">
+                <option selected>Product ID</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <select
+                class="form-select"
+                id="bill-sec-quantity"
+                aria-label="Default select example"
+              >
+                <option selected>Quantity</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </td>
+            <td>
+              <button id="danger-btn">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <hr/>
+      <br>
+      <h3>Denominations</h3>
+      <br>
+        <table class="table table-borderless">
+        <tbody>
+          <tr>
+            <td>500</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+            <td>50</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+            <td>10</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+            <td>2</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>
+              <input class="form-control" placeholder="Quantity" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="container p-4 " style="background-color: #f2f2f2">
+      <label class="my-4">cash paid by customer</label>
+      <input class="bg-light border rounded p-2 my-4 mx-3" placeholder="Amount" />
+      <div class="float-right my-4">
+        <button class="btn bg-light rounded px-5 py-2">cancel</button>
+        <button id="bill-generate-btn" class="border rounded px-5 py-2" >generate bill</button>
+      </div>
+    </div>
+  </body>
+</html>
