@@ -12,7 +12,8 @@ class BillsController < ApplicationController
     if params[:token]
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
-      @remaining_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
+      @added_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
+      @remaining_denominations = remaining_denominations(@added_denominations, :sub)
       @bill_products = @bill.bill_products
       @calculate_price_for_user = @bill.calculate_balance_to_customer
     end
@@ -117,20 +118,20 @@ class BillsController < ApplicationController
       end
     end
   end
-  def remaining_denominations(denominations)
+  def remaining_denominations(denominations, operation)
     customer_amount = params[:bill][:customer_amount].to_i
     denominations = denominations["denominations"].transform_keys(&:to_i)
-
     denominations.each do |denom, count|
       needed_count = customer_amount / denom
       if count.to_i > 0
         given_count = [count.to_i, needed_count].min
         customer_amount -= given_count * denom
-        denominations[denom] = denominations[denom].to_i - given_count
+        denominations[denom] = operation == :add ?
+                                 denominations[denom].to_i + given_count
+                                 :
+                                 denominations[denom].to_i - given_count
       end
     end
-
-    denominations.transform_keys(&:to_s)
+    denominations.transform_keys(&:to_s).merge("customer_amount": customer_amount)
   end
 end
-
