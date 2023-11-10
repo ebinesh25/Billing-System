@@ -13,9 +13,10 @@ class BillsController < ApplicationController
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
       @added_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
-      @remaining_denominations = remaining_denominations(@added_denominations, :sub)
       @bill_products = @bill.bill_products
-      @calculate_price_for_user = @bill.calculate_balance_to_customer
+      @calculate_price_for_user = calculate_price_for_all_products
+      @remaining_denominations = remaining_denominations(@added_denominations, @bill.customer_amount,:sub)
+
     end
     # Decode token without raising JWT::ExpiredSignature error
   end
@@ -25,6 +26,7 @@ class BillsController < ApplicationController
     @bill = Bill.new
     @bill.bill_products.build
   end
+
 
   # GET /bills/1/edit
   def edit
@@ -38,13 +40,15 @@ class BillsController < ApplicationController
     # bill_params.slice(:bill_products_attributes).each do |key, pair|
     #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
     # end
-    @remaining_denominations = remaining_denominations(bill_params.slice(:denominations))
+    customer_amount = params[:bill][:customer_amount].to_i
+    @remaining_denominations = remaining_denominations(bill_params["denominations"],customer_amount, :add)
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @token = JWT.encode @remaining_denominations, nil, 'none'
 
     respond_to do |format|
       if @bill.save
         build_bill_products #=> is called to save the fields of nested attributes in DB once bill is save successfully
+
         unless @not_saved_attributes.present?
           format.html { redirect_to bill_url(@bill, token: @token), notice: "Bill was successfully created." }
           format.json { render :show, status: :created, location: @bill }
@@ -118,11 +122,11 @@ class BillsController < ApplicationController
       end
     end
   end
-  def remaining_denominations(denominations, operation)
-    customer_amount = params[:bill][:customer_amount].to_i
-    denominations = denominations["denominations"].transform_keys(&:to_i)
+  def remaining_denominations(denominations, customer_amount, operation)
+    # customer_amount = operation == :add ? params[:bill][:customer_amount].to_i : @bill.customer_amount
+    denominations = denominations.transform_keys(&:to_i)
     denominations.each do |denom, count|
-      needed_count = customer_amount / denom
+      needed_count = customer_amount.div(denom)
       if count.to_i > 0
         given_count = [count.to_i, needed_count].min
         customer_amount -= given_count * denom
@@ -132,6 +136,14 @@ class BillsController < ApplicationController
                                  denominations[denom].to_i - given_count
       end
     end
-    denominations.transform_keys(&:to_s).merge("customer_amount": customer_amount)
+    denominations.transform_keys(&:to_s)
   end
+
+  def calculate_price_for_all_products
+    bill_data = Bill.where(id: @bill.id).pluck(:total_price_without_tax, :total_tax_payable, :net_price, :rounded_price, :balance_amount).first
+    words_array = %w[Total\ Price\ Without Tax\ Total\ Tax\ Payable Net\ Price Rounded\ Price Balance\ amount\ to\ customer]
+
+    result_hash = words_array.zip(bill_data).to_h
+  end
+
 end

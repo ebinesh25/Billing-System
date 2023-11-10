@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_31_121129) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_09_083421) do
   create_table "bill_products", force: :cascade do |t|
     t.integer "quantity"
     t.decimal "purchased_price"
@@ -29,6 +29,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_31_121129) do
     t.decimal "customer_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "total_price_without_tax"
+    t.decimal "total_tax_payable"
+    t.decimal "net_price"
+    t.decimal "rounded_price"
+    t.decimal "balance_amount"
   end
 
   create_table "products", force: :cascade do |t|

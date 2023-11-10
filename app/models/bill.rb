@@ -11,16 +11,30 @@ class Bill < ApplicationRecord
     total_price_without_tax = bill_products.sum(:purchased_price).round(2)
     total_tax_payable = bill_products.sum(:tax_payable).round(2)
     net_price = (total_price_without_tax + total_tax_payable).round(2)
-    rounded_price = net_price.round(0)
+    rounded_price = net_price.floor
     balance_amount = customer_amount - rounded_price
 
-    {
+    self.update_columns(total_price_without_tax: total_price_without_tax,
+                        total_tax_payable: total_tax_payable,
+                        net_price: net_price,
+                        rounded_price: rounded_price,
+                        balance_amount: balance_amount
+                        )
+
+    # {
+    #   "Total Price Without Tax": total_price_without_tax,
+    #   "Total Tax Payable": total_tax_payable,
+    #   "Net Price": net_price,
+    #   "Rounded Price": rounded_price,
+    #   "Balance amount to customer": balance_amount
+    # }
+    puts " #{{
       "Total Price Without Tax": total_price_without_tax,
       "Total Tax Payable": total_tax_payable,
       "Net Price": net_price,
       "Rounded Price": rounded_price,
       "Balance amount to customer": balance_amount
-    }
+    }}"
 
 
   end
