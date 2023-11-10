@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddColumnsToBill < ActiveRecord::Migration[7.0]
   def change
     add_column :bills, :total_price_without_tax, :decimal

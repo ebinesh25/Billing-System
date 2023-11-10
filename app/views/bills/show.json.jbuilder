@@ -1,1 +1,3 @@
-json.partial! "bills/bill", bill: @bill
+# frozen_string_literal: true
+
+json.partial! 'bills/bill', bill: @bill
