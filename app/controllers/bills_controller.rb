@@ -9,15 +9,18 @@ class BillsController < ApplicationController
 
   # GET /bills/1 or /bills/1.json
   def show
-    if params[:token]
+    # byebug
+    if params[:token] && @bill.balance_amount > 0
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
       @added_denominations = JSON.parse( token_as_array[0].gsub("=>", ":") )
       @bill_products = @bill.bill_products
       @calculate_price_for_user = calculate_price_for_all_products
       @remaining_denominations = remaining_denominations(@added_denominations, @bill.customer_amount,:sub)
-
+    else
+      render "bills/insufficient_customer_amount"
     end
+
     # Decode token without raising JWT::ExpiredSignature error
   end
 
