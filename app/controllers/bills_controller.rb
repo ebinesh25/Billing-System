@@ -44,7 +44,7 @@ class BillsController < ApplicationController
       if @bill.save
         build_bill_products #=> is called to save the fields of nested attributes in DB once bill is save successfully
         @bill.calculate_balance_to_customer
-        if @all_saved
+        if @missed_attributes.nil?
           format.html { redirect_to bill_url(@bill, token: @token), notice: 'Bill was successfully created.' }
           format.json { render :show, status: :created, location: @bill }
         else
@@ -91,12 +91,8 @@ class BillsController < ApplicationController
         quantity: attributes[:quantity]
       )
       # Save the bill_product record
-      @all_saved = if @bill_product.save
-                     true
-                   else
-                     false
-                     # return @all_saved
-                   end
+      @missed_attributes += 1 unless @bill_product.save
+
     end
   end
 

@@ -78,3 +78,5 @@ gem 'jwt', '~> 2.7'
 gem 'rails-ujs', '~> 0.1.0'
 
 gem 'nokogiri', '~> 1.15'
+
+gem "bullet", "~> 7.1"
