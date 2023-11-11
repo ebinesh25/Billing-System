@@ -2,9 +2,12 @@
 <p style="color: green"><%= notice %></p>
 
 <%= render "form", bill: @bill %>
+<h6 style="color: #888888"> <span id="required"> * </span> Marked are fields required </h6>
 
-<br>
-
-<div>
-  <%= link_to "Back to bills", bills_path %>
-</div>
+<style>
+  #required{
+  color: #B00100;
+  font-size: x-large;
+  padding-left: 2px
+  }
+</style>
