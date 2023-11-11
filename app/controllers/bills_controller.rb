@@ -12,6 +12,7 @@ class BillsController < ApplicationController
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
       @added_denominations = JSON.parse(token_as_array[0].gsub('=>', ':'))
+      # byebug
       @bill_products = @bill.bill_products
       @calculate_price_for_user = calculate_price_for_all_products
       @remaining_denominations = remaining_denominations(@added_denominations, @bill.customer_amount, :sub)
@@ -98,20 +99,36 @@ class BillsController < ApplicationController
 
   def remaining_denominations(denominations, customer_amount, operation)
     # customer_amount = operation == :add ? params[:bill][:customer_amount].to_i : @bill.customer_amount
-    denominations = denominations.transform_keys(&:to_i)
+    # denominations = denominations.transform_keys(&:to_i)
+    #   denominations.with_indifferent_access.each do |denom, count|
+    #   needed_count = customer_amount.div(denom)
+    #   next unless count.to_i.positive?
+    #
+    #   given_count = [count.to_i, needed_count].min
+    #   customer_amount -= given_count * denom
+    #   denominations[denom] = if operation == :add
+    #                            denominations[denom].to_i + given_count
+    #                          else
+    #                            denominations[denom].to_i - given_count
+    #                          end
+    #   end
+    # denominations.with_indifferent_access
+
     denominations.each do |denom, count|
-      needed_count = customer_amount.div(denom)
       next unless count.to_i.positive?
 
-      given_count = [count.to_i, needed_count].min
+      needed_count = customer_amount.div(denom)
+      given_count = [count, needed_count].min
+
       customer_amount -= given_count * denom
-      denominations[denom] = if operation == :add
-                               denominations[denom].to_i + given_count
-                             else
-                               denominations[denom].to_i - given_count
-                             end
+      denominations[denom] += (operation == :add ? 1 : -1) * given_count
     end
-    denominations.transform_keys(&:to_s)
+
+    if customer_amount.positive?
+      flash[:alert] = "Insufficient Denominations. Contact the Admin."
+    end
+
+    denominations.merge("alert": "Insufficient Denominations. Contact the Admin.")
   end
 
   def calculate_price_for_all_products
