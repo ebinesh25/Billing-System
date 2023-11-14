@@ -12,10 +12,10 @@
 
 ActiveRecord::Schema[7.0].define(version: 2023_11_11_053407) do
   create_table "bill_products", force: :cascade do |t|
-    t.integer "quantity", null: false
-    t.decimal "purchased_price", null: false
-    t.decimal "tax_payable", null: false
-    t.decimal "total_price", null: false
+    t.integer "quantity"
+    t.decimal "purchased_price"
+    t.decimal "tax_payable"
+    t.decimal "total_price"
     t.integer "bill_id", null: false
     t.string "product_id"
     t.datetime "created_at", null: false
@@ -25,8 +25,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_11_053407) do
   end
 
   create_table "bills", force: :cascade do |t|
-    t.string "customer_email", null: false
-    t.decimal "customer_amount", null: false
+    t.string "customer_email"
+    t.decimal "customer_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "total_price_without_tax"
@@ -36,10 +36,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_11_053407) do
     t.decimal "balance_amount"
   end
 
-  create_table "products", id: :string, force: :cascade do |t|
-    t.string "name", null: false
-    t.decimal "unit_price", null: false
-    t.float "tax_percent", null: false
+  create_table "products", force: :cascade do |t|
+    t.decimal "unit_price"
+    t.float "tax_percent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

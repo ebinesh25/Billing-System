@@ -6,6 +6,10 @@ class Product < ApplicationRecord
 
   before_save :add_custom_id
 
+  validates :name, :unit_price, :tax_percent, presence: true
+
+
+
   def add_custom_id
     puts "In Before save"
     # update_column(custom_id: "PID_#{SecureRandom.random_number(100000)}")

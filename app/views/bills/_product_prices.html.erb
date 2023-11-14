@@ -1,6 +1,6 @@
 
 <% bill_products.each do |bill_product| %>
-<tr>
+<tr >
   <td> <%= bill_product.product_id %></td>
   <td>₹<%= format('%.2f', bill_product.product.unit_price)  %></td>
   <td> <%= bill_product.quantity %></td>
@@ -11,3 +11,9 @@
 
 </tr>
 <% end %>
+
+<style>
+  td{
+      text-align: left;
+  }
+</style>

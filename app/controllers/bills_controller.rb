@@ -8,7 +8,7 @@ class BillsController < ApplicationController
   def index; end
 
   def show
-    if params[:token] && @bill.balance_amount.positive?
+    if  @bill.balance_amount.positive?
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
       @added_denominations = JSON.parse(token_as_array[0].gsub('=>', ':'))
@@ -37,6 +37,7 @@ class BillsController < ApplicationController
     #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
     # end
     customer_amount = params[:bill][:customer_amount].to_i
+    # byebug
     @remaining_denominations = remaining_denominations(bill_params['denominations'], customer_amount, :add)
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @token = JWT.encode @remaining_denominations, nil, 'none'
@@ -112,10 +113,13 @@ class BillsController < ApplicationController
     #                            denominations[denom].to_i - given_count
     #                          end
     #   end
-    # denominations.with_indifferent_access
+ 
+    
+    denominations = denominations.transform { |k, v| [k.to_i, v.to_i] }
 
     denominations.each do |denom, count|
-      next unless count.to_i.positive?
+
+      next unless count.positive?
 
       needed_count = customer_amount.div(denom)
       given_count = [count, needed_count].min
@@ -140,3 +144,5 @@ class BillsController < ApplicationController
     words_array.zip(bill_data).to_h
   end
 end
+
+
