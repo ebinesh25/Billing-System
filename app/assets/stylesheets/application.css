@@ -74,16 +74,6 @@ label + input{
     background-color: #eff6ff;
     width: 200px;
 }
- 
-
-@media only screen and (max-width:600px){
-    select{
-        padding: 10px 10px; 
-     }
-     #bill-sec-quantity{
-        padding: 10px 10px;
-     }
-}
 
 /* index2 css */
 

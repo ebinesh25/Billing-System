@@ -8,7 +8,8 @@ class BillsController < ApplicationController
   def index; end
 
   def show
-    if  @bill.balance_amount.positive?
+    # byebug
+    if @bill.balance_amount >= 0
       # @remaining_denominations = JsonWebToken.decode(params[:token])
       token_as_array = JWT.decode params[:token], nil, false
       @added_denominations = JSON.parse(token_as_array[0].gsub('=>', ':'))
@@ -16,6 +17,7 @@ class BillsController < ApplicationController
       @bill_products = @bill.bill_products
       @calculate_price_for_user = calculate_price_for_all_products
       @remaining_denominations = remaining_denominations(@added_denominations, @bill.customer_amount, :sub)
+
     else
       render 'bills/insufficient_customer_amount'
     end
@@ -33,12 +35,9 @@ class BillsController < ApplicationController
   def create
     @bill = Bill.new(bill_params.slice(:customer_email, :customer_amount))
 
-    # bill_params.slice(:bill_products_attributes).each do |key, pair|
-    #   @bill_products = @bill.bill_products.build(product_id: [key][pair], quantity: bp[key][pair])
-    # end
     customer_amount = params[:bill][:customer_amount].to_i
-    # byebug
     @remaining_denominations = remaining_denominations(bill_params['denominations'], customer_amount, :add)
+    # byebug
     # params[:denominations] vs params.slice(:denominations) - .slice is secure and easily readable and self explanatory, Directly access may introduce permission threats
     @token = JWT.encode @remaining_denominations, nil, 'none'
 
@@ -99,50 +98,65 @@ class BillsController < ApplicationController
   end
 
   def remaining_denominations(denominations, customer_amount, operation)
-    # customer_amount = operation == :add ? params[:bill][:customer_amount].to_i : @bill.customer_amount
-    # denominations = denominations.transform_keys(&:to_i)
-    #   denominations.with_indifferent_access.each do |denom, count|
-    #   needed_count = customer_amount.div(denom)
-    #   next unless count.to_i.positive?
-    #
-    #   given_count = [count.to_i, needed_count].min
-    #   customer_amount -= given_count * denom
-    #   denominations[denom] = if operation == :add
-    #                            denominations[denom].to_i + given_count
-    #                          else
-    #                            denominations[denom].to_i - given_count
-    #                          end
-    #   end
- 
-    
-    denominations = denominations.transform { |k, v| [k.to_i, v.to_i] }
+    denominations = denominations.transform_keys(&:to_i)
+                                 .transform_values(&:to_i)
 
-    denominations.each do |denom, count|
+    denominations.each do |amount, count|
+      next unless count >= 0 && amount.positive?
 
-      next unless count.positive?
-
-      needed_count = customer_amount.div(denom)
+      needed_count = customer_amount.div(amount)
       given_count = [count, needed_count].min
 
-      customer_amount -= given_count * denom
-      denominations[denom] += (operation == :add ? 1 : -1) * given_count
+      customer_amount -= given_count * amount
+      denominations[amount] += (operation == :add ? 1 : -1) * given_count
     end
 
-    if customer_amount.positive?
-      flash[:alert] = "Insufficient Denominations. Contact the Admin."
-    end
+    denominations = denominations.transform_keys(&:to_s)        #=> convert keys to string (because JSON can't have integer keys)
+                                 .transform_values(&:to_s)
 
-    denominations.merge("alert": "Insufficient Denominations. Contact the Admin.")
+    denominations = customer_amount.positive? ? denominations.merge("alert": 'Insufficient Denominations. Contact the Admin.') : denominations
+
   end
 
   def calculate_price_for_all_products
-    bill_data = Bill.where(id: @bill.id).pluck(:total_price_without_tax, :total_tax_payable, :net_price,
-                                               :rounded_price, :balance_amount).first
+    bill_data = Bill.where(id: @bill.id).pluck(:total_price_without_tax, :total_tax_payable,
+                                               :net_price, :rounded_price, :balance_amount).first
     words_array = ['Total Price Without', 'Tax Total Tax Payable', 'Net Price', 'Rounded Price',
                    'Balance amount to customer']
 
     words_array.zip(bill_data).to_h
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

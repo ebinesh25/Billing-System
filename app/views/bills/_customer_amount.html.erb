@@ -1,12 +1,12 @@
 <% @calculate_price_for_user.each do |message, price| %>
   <tr style="text-align: right" >
     <td>
-      <%="#{message} :  "%>
+      <%="#{message}   "%>
     </td>
     <td>
-      &nbsp&nbsp&nbsp&nbsp
+      : &nbsp&nbsp&nbsp&nbsp
     </td>
-    <td>
+    <td style="text-align: right">
       <%= format('%.2f', price) %>
     </td>
   </tr>

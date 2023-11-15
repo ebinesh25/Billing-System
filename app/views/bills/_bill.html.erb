@@ -31,12 +31,14 @@
 
   <br>
   <br>
-  <h3>Balance Denominations</h3>
-  <br>
+  <div>
+    <h3>Balance Denominations</h3>
+    <br>
 
-  <% if params[:action] === 'show' && params[:token].present? %>
-    <%= render "show_denominations", denominations: @remaining_denominations %>
- <% end %>
+    <% if params[:action] === 'show' && params[:token].present? %>
+      <%= render "show_denominations", denominations: @remaining_denominations %>
+   <% end %>
+  </div>
 
   <div  class="container d-flex justify-content-end" style="background-color: #f2f2f2;">
     <table>
